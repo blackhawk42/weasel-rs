@@ -1,0 +1,13 @@
+[package]
+name = "weasel-rs"
+version = "1.0.0"
+edition = "2021"
+authors = ["Daniel Chávez"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.4.11", features = ["derive"] }
+rand = "0.8.5"
+unicode-normalization = "0.1.22"
+unicode-segmentation = "1.10.1"
