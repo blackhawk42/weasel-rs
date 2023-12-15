@@ -27,15 +27,15 @@ at least some Unicode characters correctly (make sure your terminal can handle t
 Example (abridged):
 
 ```
-./weasel-rs -a 'ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz, 👩‍👩‍👧‍👦🦦' 'Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutro 🦦'
-0: Ŭĝd,ZcOUGrĈ ŭ KzBcŭvbCrlvlĝaĵ,JnpGRĴŭ👩‍👩‍👧‍👦dnvaM (2/43)
-1: Ŭĝd,zaOUGrĈ ŭ KzBcŭvbCrlvlĝ👩‍👩‍👧‍👦ĵ,JnpGRĴŭ👩‍👩‍👧‍👦dnvaM (3/43)
-2: Ŭĝd,zaOUGrĈ ŭ KzBcŭŬbFrlvlĝ👩‍👩‍👧‍👦ĵ,JnpGRĴŭ👩‍👩‍👧‍👦dnv M (4/43)
-3: Ŭid,zaOUGro ŭ KzBŬŭŬbFrlvlĝ👩‍👩‍👧‍👦ĵ,JnpGRĴŭ👩‍👩‍👧‍👦dnv M (6/43)
+./weasel-rs  -a 'ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz, 👩‍👩‍👧‍👦🦦' 'Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutron 🦦'
+0: MJZO🦦,zrciIm🦦ŜĜNICA eJrĉalnDduPhno🦦VzŭOUlmmL (2/44)
+1: MJZOI,zrciIm🦦ŜĜNICA eJrĉĜlnDduPhno🦦VzŭGUlmmL (2/44)
+2: MJZOI,mrciIm🦦ŜĜNICA eJreĜlnDduPhno🦦VzŭGUlmmL (4/44)
+3: MJZOIĵmrciIm🦦ŜĜNICA eJreĜlnDduPhno🦦VzŭGjlmmL (4/44)
 ...
-173: Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutro L (42/43)
-174: Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutro L (42/43)
-175: Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutro 🦦 (43/43)
+579: Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lFtron 🦦 (43/44)
+580: Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lFtron 🦦 (43/44)
+581: Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutron 🦦 (44/44)
 ```
 
 Note the correct handling of this multicode (U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F466)
