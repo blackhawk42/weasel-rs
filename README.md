@@ -1,4 +1,4 @@
-# wasel-rs
+# weasel-rs
 
 An implementation in Rust of the ["Weasel algorithm"](https://en.wikipedia.org/wiki/Weasel_program)
 proposed by Richard Dawkins in _The Blind Watchmaker_ to ilustrate how evolutive processes
