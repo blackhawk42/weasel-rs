@@ -27,7 +27,7 @@ at least some Unicode characters correctly (make sure your terminal can handle t
 Example (abridged):
 
 ```
-./weasel-rs  -a 'ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz, 👩‍👩‍👧‍👦🦦' 'Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutron 🦦'
+./weasel-rs -a 'ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz, 👩‍👩‍👧‍👦🦦' 'Mia familio 👩‍👩‍👧‍👦 kredas, ke ĝi similas lutron 🦦'
 0: MJZO🦦,zrciIm🦦ŜĜNICA eJrĉalnDduPhno🦦VzŭOUlmmL (2/44)
 1: MJZOI,zrciIm🦦ŜĜNICA eJrĉĜlnDduPhno🦦VzŭGUlmmL (2/44)
 2: MJZOI,mrciIm🦦ŜĜNICA eJreĜlnDduPhno🦦VzŭGUlmmL (4/44)

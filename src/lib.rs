@@ -83,29 +83,23 @@ impl FromStr for Percentage {
 
 /// Represents an offspring, which contains the text itself and a calculated
 /// fitness in relation to it's parent.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Offspring {
     text: String,
     fitness: usize,
 }
 
-impl PartialEq for Offspring {
-    fn eq(&self, other: &Self) -> bool {
-        self.fitness == other.fitness
+impl Clone for Offspring {
+    fn clone(&self) -> Self {
+        Self {
+            text: self.text.clone(),
+            fitness: self.fitness.clone(),
+        }
     }
-}
 
-impl Eq for Offspring {}
-
-impl PartialOrd for Offspring {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.fitness.partial_cmp(&other.fitness)
-    }
-}
-
-impl Ord for Offspring {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.fitness.cmp(&other.fitness)
+    fn clone_from(&mut self, source: &Self) {
+        self.text.clone_from(&source.text);
+        self.fitness = source.fitness;
     }
 }
 
@@ -119,9 +113,39 @@ where
     rng: R,
     alphabet: Vec<String>,
     target: String,
-    offspring_buffer: Vec<Offspring>,
+    offspring_per_generation: usize,
+    winning_offspring_buff: Offspring,
+    new_offspring_buff: Offspring,
     mutation_rate: f64,
     fitness_function: F,
+}
+
+/// Helper function to create the new individual
+fn do_breed<R, F>(
+    rng: &mut R,
+    alphabet: &[String],
+    mutation_rate: f64,
+    target: &str,
+    individual: &str,
+    offspring_buff: &mut Offspring,
+    fitness_function: &F,
+) where
+    R: Rng,
+    F: Fn(&str, &str) -> usize,
+{
+    offspring_buff.text.clear();
+
+    for g in individual.graphemes(true) {
+        let next_grapheme = if rng.gen_range(f64::MIN_POSITIVE..=1.0) <= mutation_rate {
+            alphabet.iter().choose(rng).unwrap()
+        } else {
+            g
+        };
+
+        offspring_buff.text.push_str(next_grapheme);
+    }
+
+    offspring_buff.fitness = (fitness_function)(target, &offspring_buff.text);
 }
 
 impl<R, F> Breeder<R, F>
@@ -149,7 +173,7 @@ where
         rng: R,
         target: String,
         alphabet: &str,
-        offsprint_per_generation: NonZeroUsize,
+        offspring_per_generation: NonZeroUsize,
         mutation_rate: Percentage,
         fitness_function: F,
     ) -> Result<Self, BreedingError> {
@@ -168,20 +192,19 @@ where
             });
         }
 
-        let offsprint_per_generation = offsprint_per_generation.get();
-        let mut offspring_buffer = Vec::with_capacity(offsprint_per_generation);
-        for _ in 0..offsprint_per_generation {
-            offspring_buffer.push(Offspring {
-                text: String::new(),
-                fitness: 0,
-            })
-        }
-
         Ok(Self {
             rng,
             alphabet,
+            winning_offspring_buff: Offspring {
+                text: String::with_capacity(target.len()),
+                fitness: 0,
+            },
+            new_offspring_buff: Offspring {
+                text: String::with_capacity(target.len()),
+                fitness: 0,
+            },
             target,
-            offspring_buffer,
+            offspring_per_generation: offspring_per_generation.get(),
             mutation_rate: mutation_rate.get(),
             fitness_function,
         })
@@ -198,33 +221,49 @@ where
     }
 
     /// Do a breeding round, based on the graphemes of the `individual`.
-    /// 
+    ///
     /// No normalization is made of the individual.
     pub fn breed(&mut self, individual: &str) -> (String, usize) {
-        for off in self.offspring_buffer.iter_mut() {
-            off.text.clear();
+        let mut current_offspring = 1;
+        do_breed(
+            &mut self.rng,
+            &self.alphabet,
+            self.mutation_rate,
+            &self.target,
+            individual,
+            &mut self.winning_offspring_buff,
+            &self.fitness_function,
+        );
 
-            for g in individual.graphemes(true) {
-                let next_grapheme = if self.rng.gen_range(f64::MIN_POSITIVE..=1.0) <= self.mutation_rate {
-                    self.alphabet.iter().choose(&mut self.rng).unwrap()
-                } else {
-                    g
-                };
+        while current_offspring < self.offspring_per_generation {
+            do_breed(
+                &mut self.rng,
+                &self.alphabet,
+                self.mutation_rate,
+                &self.target,
+                individual,
+                &mut self.new_offspring_buff,
+                &self.fitness_function,
+            );
 
-                off.text.push_str(next_grapheme);
+            if self.new_offspring_buff.fitness > self.winning_offspring_buff.fitness {
+                self.winning_offspring_buff
+                    .clone_from(&self.new_offspring_buff);
             }
 
-            off.fitness = (self.fitness_function)(&self.target, &off.text);
+            current_offspring += 1;
         }
 
-        let result = self.offspring_buffer.iter().max().unwrap();
-        (result.text.clone(), result.fitness)
+        (
+            self.winning_offspring_buff.text.clone(),
+            self.winning_offspring_buff.fitness,
+        )
     }
 
     /// Create an iterator that automates breeding rounds. Returns the iterator
     /// and a random string grapheme-length equal to the Breeder's target,
     ///  to be used as "generation 0".
-    /// 
+    ///
     /// `target_fitness` allows to optionally set a an iteration limit. If Some,
     /// iteration will cease when we get an individual of at least this target
     /// fitness; you probably want this to be the fitness of the target
@@ -253,7 +292,7 @@ where
 }
 
 /// Iterator to automate breeding rounds.
-/// 
+///
 /// Use [Breeder's `iter()` method](Breeder::iter()) to create one.
 #[derive(Debug)]
 pub struct BreedingIterator<'b, R, F>
@@ -296,14 +335,14 @@ where
 }
 
 /// Fitness function that simply ignores arguments and returns 1.
-/// 
+///
 /// For tests and experiments where you want all individuals to be equally fit.
 pub fn fitness_always_1(_target: &str, _offspring: &str) -> usize {
     1
 }
 
 /// Traditional fitness function.
-/// 
+///
 /// Both `target` and `offspring` are separated into graphemes (no normalization)
 /// and compared. For each grapheme of the offspring that is equal to a grapheme
 /// in the target, in the same position, a point is awarded.
