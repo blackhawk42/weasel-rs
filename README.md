@@ -1,6 +1,6 @@
 # wasel-rs
 
-An implementation in Rust of the ["Wasel algorithm"](https://en.wikipedia.org/wiki/Weasel_program)
+An implementation in Rust of the ["Weasel algorithm"](https://en.wikipedia.org/wiki/Weasel_program)
 proposed by Richard Dawkins in _The Blind Watchmaker_ to ilustrate how evolutive processes
 differ from complete random chance.
 
