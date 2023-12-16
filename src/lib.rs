@@ -295,10 +295,18 @@ where
     }
 }
 
+/// Fitness function that simply ignores arguments and returns 1.
+/// 
+/// For tests and experiments where you want all individuals to be equally fit.
 pub fn fitness_always_1(_target: &str, _offspring: &str) -> usize {
     1
 }
 
+/// Traditional fitness function.
+/// 
+/// Both `target` and `offspring` are separated into graphemes (no normalization)
+/// and compared. For each grapheme of the offspring that is equal to a grapheme
+/// in the target, in the same position, a point is awarded.
 pub fn fitness_comparison(target: &str, offspring: &str) -> usize {
     let mut fitness = 0;
     target
